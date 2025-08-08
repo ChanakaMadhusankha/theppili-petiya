@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>මගේ මැණිකට 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 50%, #ffb3b3 100%);
+      color: #fff;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      padding: 20px;
+      text-align: center;
+      margin: 0;
+      position: relative;
+    }
+
+    .hearts {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+
+    .volume-msg {
+      font-size: 1.3rem;
+      margin-bottom: 30px;
+      animation: fadeIn 2s ease-in-out;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px 20px;
+      border-radius: 50px;
+    }
+
+    .countdown-container {
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      margin-bottom: 20px;
+    }
+
+    .countdown {
+      font-size: 4rem;
+      font-weight: bold;
+      animation: pulse 1s infinite;
+      margin: 0;
+      font-family: 'Kaushan Script', cursive;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .message-container {
+      display: none;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      max-width: 700px;
+      width: 90%;
+      max-height: 70vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.5) transparent;
+    }
+
+    .message-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .message-container::-webkit-scrollbar-thumb {
+      background-color: rgba(255,255,255,0.5);
+      border-radius: 4px;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .message-content {
+      font-size: 1.3rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      text-align: left;
+      line-height: 1.8;
+    }
+
+    .photo-frame {
+      display: none;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 5px solid white;
+      overflow: hidden;
+      margin: 0 auto 30px auto;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      animation: floatUp 3s ease-in-out infinite;
+    }
+
+    @keyframes floatUp {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .envelope {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 100px;
+      animation: fall 3s forwards;
+      z-index: 2;
+    }
+
+    @keyframes fall {
+      0% { top: -100px; transform: translateX(-50%) rotate(0deg); }
+      100% { top: 50%; transform: translateX(-50%) rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .countdown {
+        font-size: 3rem;
+      }
+      
+      .message-container {
+        padding: 20px;
+      }
+      
+      .message-content {
+        font-size: 1.1rem;
+      }
+      
+      .photo-frame {
+        width: 150px;
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts"></div>
+  <div class="envelope">💌</div>
+
+  <div class="volume-msg"> volume එක වැඩි කරන්න 🔊</div>
+
+  <div class="countdown-container">
+    <div class="countdown" id="countdown">10</div>
+  </div>
+
+  <div class="message-container" id="message">
+    <div class="photo-frame">
+      <img src="https://i.ibb.co/svqJqdWT/2bb1aeadd2ddd34a2fb04d68d767fbb8.jpg" alt="Our Photo">
+    </div>
+    <div class="message-content" id="messageContent"></div>
+  </div>
+
+  <!-- Hidden autoplay loop audio -->
+  <iframe
+    src="https://www.youtube.com/embed/0A5UKTcez3A?autoplay=1&loop=1&playlist=0A5UKTcez3A"
+    allow="autoplay"
+    style="display: none;"
+  ></iframe>
+
+  <script>
+    const countdownEl = document.getElementById('countdown');
+    const messageEl = document.getElementById('message');
+    const messageContentEl = document.getElementById('messageContent');
+    const heartsContainer = document.getElementById('hearts');
+    const envelope = document.querySelector('.envelope');
+    const photoFrame = document.querySelector('.photo-frame');
+    const volumeMsg = document.querySelector('.volume-msg');
+
+    const fullMessage = `මගේ පුංචි තෙප්පිලි පැටික්කි වෙත 🐟🐟
+
+මැණිකේ ,  
+
+ඒ කාලේ හිටිය යාලුවන්ට අනුව මගෙ මැණිකට මගෙ මැණිකගෙ පැත්තේ යාලුවෝ එපා කිව්වත් , මට මගෙ පැත්තේ යාලුවෝ එපා කිව්වත් අපි දෙන්නා අපි දෙන්නම විශ්වාස කරලා මේ එෆෙයා එක පටන් අරගෙන අදට අවුරුදු දෙකකටත් වැඩි කාලයක් ගත වෙලා ගිහින් .... 
+
+එදා අපි දෙන්නා කැම්පස් එකෙන් දැන අඳුන ගෙන , යාලුවෝ වගේ කතා බහ කරගෙන ගියා. ඒත් මොකක්දෝ හේතුවකට අපි දෙන්නා ළං උණා යාලුකමට එහා ගිය ආදරයකට මෙහා නතර උණ සීමාවක. 
+
+ඒ සීමාවේ ඉඳලා කතාබහ කරලා ගණුදෙණු කරලා ඉන්න වෙලාව මට දැනුන හැඟීම් එක්ක මම තීරණය කරා එදා ඔයාගෙන් එෆෙයා එකක් පටන් ගන්න ඕන කරන පළවෙනි වචනේ " මම ඔයාට ආදරෙයි ඔයා මොකද කියන්නෙ . හදිසියක් නැ හිතලා බලලා උත්තරයක් දෙන්න " කියන වචනේ ඔයාගෙන් අහන්න . 
+
+ඉතින් , ඒ ඇහුවා වගේම මගෙ ජීවිතේ වැඩියෙන්ම සතුටු උණ දවස විදිහට මගෙ මැණික මට කැමැත්ත දුන්නා . මට ආදරෙයි කිව්වා. 
+
+එතනින් නැවතුනේ නැති අපි දෙන්නා .. මුලු ලෝකයටම  හංගලා අපි දෙන්නා එකට ජීවත් වෙන්න තීරණය කරා. *අද මම සතුටු වෙනවා එදා මම ඔයාව එක තැනකට ගේන්න ගත්ත තීරණය ගැන* . 
+
+එතනට ආව දවසේ ඉඳලා ඒ වෙනකම් හිටිය චූටි කෙල්ල ලොකු කෙල්ලක් උණා 🥰  වගකීම් ගොඩක් එක්ක හැප්පෙන්න උණා . 
+
+ඒ හැමදේම එක්ක ගෙදර තියන වැඩ ටික බලා ගත්තා . තියන උපරිමෙන් කන්න බොන්න හදලා දීලා මමත් බලාගෙන මගෙත් බඩ කට පිරෙව්වා. මගෙ යට කලිසමේ ඉඳලා සෝදන්න පටන් ගත්තා. 
+
+කාලයත් එක්ක මගෙත් එක්ක හරි හරියට වැඩ,කරන්න පටන් ගත්තා. ගෙදර වැඩ වගේම මගෙත් එක්කත් වැඩ කරලා මටත් සපෝර්ට් එකක් දෙන්න උපරිමයෙන් ම කැපඋණා . අදටත් කැප වෙනවා. 
+
+මමත් , ගතවෙන හැම තත්පරයක්  පාසාම *මගෙ මැණිකට හොඳ ළයිෆ් පාර්ට්නර් කෙනෙක් වෙන්න , හස්බන්ඩ් කෙනෙක් වෙන්න , මම උපරිම මහන්සි වෙනවා*
+
+මාව දරාගෙන ,මාව බලාගෙන මේ ආව අවුරුදු දෙකකට වැඩි ගමනේ මගෙන් අත් වැරදි ,කට වැරදි , හිත් රිදීම් අනන්තවත් උණා . ඒ හැමදේකටම මම සමාව ඉල්ලනවා මැණිකේ ❤️.
+
+මගෙ ජිවිතේ අන්තිම හුස්ම පොද වෙනකම් . මගෙ අහිංසක , හුරුබුහුටි මගෙ මැණිකව කිසිම දවසක කිසිම වෙලාවක තනි කරන්නෙ නැ කියලා මම පොරොන්දු වෙනවා මගෙ රත්තරන් ❤️
+
+ඔහේ ගලාගෙන ගිය මගේ ජීවිතේට ඇවිල්ලා , මට හරි පාර කියලා දීලා , කියලා දෙමින් මේ විදිහට මගෙ ළඟින් මහෙ හයියට ඉන්න මගෙ රත්තරනේ *අනේකවාරයක් පින් , අනේකවාරයක් ස්තූතියි*.  `;
+
+    // Create floating hearts
+    function createHearts() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.innerHTML = '❤️';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+      heartsContainer.appendChild(heart);
+      
+      setTimeout(() => {
+        heart.remove();
+      }, 5000);
+    }
+
+    // Countdown
+    let countdown = 10;
+    const interval = setInterval(() => {
+      countdown--;
+      countdownEl.textContent = countdown;
+      if (countdown <= 0) {
+        clearInterval(interval);
+        document.querySelector('.countdown-container').style.display = "none";
+        volumeMsg.style.display = "none";
+        envelope.style.display = "none";
+        messageEl.style.display = "block";
+        photoFrame.style.display = "block";
+        typeMessage();
+        setInterval(createHearts, 300);
+      }
+    }, 1000);
+
+    // Typewriter effect
+    let index = 0;
+    function typeMessage() {
+      if (index < fullMessage.length) {
+        messageContentEl.textContent += fullMessage.charAt(index);
+        index++;
+        setTimeout(typeMessage, Math.random() * 30 + 20); // ~20-50ms per char
+      }
+    }
+
+    // Initial hearts
+    for (let i = 0; i < 20; i++) {
+      setTimeout(createHearts, i * 150);
+    }
+  </script>
+</body>
+</html>
